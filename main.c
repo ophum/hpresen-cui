@@ -3,6 +3,8 @@
 #include <string.h>
 #include <ncurses.h>
 
+#include "slide.h"
+
 int main(int argc, char **argv){
   Slide *slide[3];
   int i;
