@@ -3,22 +3,6 @@
 #include <string.h>
 #include <ncurses.h>
 
-typedef struct TAG_SLIDE Slide;
-struct TAG_SLIDE{
-  char *content;
-};
-
-Slide *new_slide(int contentLength){
-  Slide *s = (Slide *)malloc(sizeof(Slide));
-  s->content = (char *)calloc(sizeof(char), contentLength);
-  return s;
-}
-
-void del_slide(Slide *s){
-  free(s->content);
-  free(s);
-}
-
 int main(int argc, char **argv){
   Slide *slide[3];
   int i;
