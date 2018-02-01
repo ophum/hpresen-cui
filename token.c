@@ -104,43 +104,46 @@ void initDelimiter(){
   }
 
   delimiterList['\n'] = 1;
+  delimiterList['\0'] = 1;
 }
 
 static int isDelimiter(char ch){
   return delimiterList[ch];
 }
 
-Token *Tokenize(char *filename){
+Token *Tokenize(char *code){
   Token *head = new_token();
   FILE *fp;
   int tok_size;
   int i;
-  int filesize = getFileSize(filename);
-  char *file;
-  char delimiter;
+  int codeSize = strlen(code);
+  char *code_copy;
+  char delimiter[2] = {'\0'};
 
   initDelimiter();
 
-  if(filesize == 0 || (fp = fopen(filename, "r")) == NULL){
+  if(codeSize == 0){
     return NULL;
   }
 
-  file = (char *)malloc(sizeof(char) * filesize);
-  fread(file, sizeof(char), filesize, fp);
-  fclose(fp);
+  code_copy = (char *)malloc(sizeof(char) * codeSize);
+  strncpy(code_copy, code, codeSize);
 
-  for(int i = 0; i < filesize; i++){
-    switch(file[i]){
-    default: // デリミタまでをトークンとする
-      for(tok_size = 0; !isDelimiter(file[i + tok_size]); tok_size++);
-      delimiter = file[i + tok_size];
-      file[i+tok_size] = '\0';
-      add_token(&file[i], 0, head);
-      add_token(&delimiter, 1, head);
+  for(int i = 0; i < codeSize; i++){
+    printf("%d->%c\n", i, code[i]);
+    if(isDelimiter(code[i])){
+      delimiter[0] = code[i];
+      add_token(delimiter, 1, head);
+    }else {
+      for(tok_size = 0; !isDelimiter(code[i+tok_size]); tok_size++);
+      delimiter[0] = code[i + tok_size];
+      code_copy[i+tok_size] = '\0';
+      add_token(&code_copy[i], 0, head);
+      if(delimiter[0] != '\0')
+        add_token(delimiter, 1, head);
       i += tok_size;
-      break;
     }
   }
-  free(file);
+  free(code_copy);
   return head;
 }
